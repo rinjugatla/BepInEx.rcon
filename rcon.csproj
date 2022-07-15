@@ -7,8 +7,8 @@
     <ProjectGuid>{61CBB59F-4D68-43C3-A12E-B2EDACED107D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>rcon</RootNamespace>
-    <AssemblyName>rcon</AssemblyName>
+    <RootNamespace>Rcon</RootNamespace>
+    <AssemblyName>Rcon</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -57,7 +57,7 @@
     <Compile Include="Internal\AsynchronousSocketListener.cs" />
     <Compile Include="Internal\PacketType.cs" />
     <Compile Include="Internal\StateObject.cs" />
-    <Compile Include="rcon.cs" />
+    <Compile Include="Rcon.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -4,10 +4,10 @@ This is an RCON library for BepInEx compatible games that do not ship with a nat
 
 ## Usage
 
-Add `rcon.dll` to your `BepInEx/plugins` folder. Run the server at least once to generate the required config files.
+Add `Rcon.dll` to your `BepInEx/plugins` folder. Run the server at least once to generate the required config files.
 
 ### Configuration
-The configuration file will be generated as `BepInEx/config/nl.avii.plugins.rcon.cfg`
+The configuration file will be generated as `BepInEx/config/nl.avii.plugins.Rcon.cfg`
 
 Open this file with your favorite editor and change `enabled` to `true`.
  Change the port number to something close to the game port, for Valheim I've used `GamePort+2`, and at least on Nitrado game servers, I am able to connect to it. (not sure about other providers)
@@ -22,7 +22,7 @@ After changing the values, restart the server.
 
 This library does not ship with commands but is intended to be used as a dependency for other plugins.
 
-Add a reference to `rcon.dll` to your own project
+Add a reference to `Rcon.dll` to your own project
 
 ### Adding a command
 
@@ -31,18 +31,18 @@ There are 2 ways to register commands from your own plugins.
 Inline command example
 ```csharp
 [BepInPlugin("com.bepinex.plugins.example", "Example", "1.0")]
-[BepInDependency("nl.avii.plugins.rcon", BepInDependency.DependencyFlags.HardDependency)]
+[BepInDependency("nl.avii.plugins.Rcon", BepInDependency.DependencyFlags.HardDependency)]
 [BepInProcess("valheim_server.exe")]
 public class Plugin : BaseUnityPlugin
 {
-    rcon.rcon RCON;
+    Rcon.Rcon RCON;
  
     void OnEnable()
     {
-        RCON = GetComponent<rcon.rcon>();
+        RCON = GetComponent<Rcon.Rcon>();
         if (RCON == null)
         {
-            Logger.LogError("rcon plugin not loaded");
+            Logger.LogError("Rcon plugin not loaded");
             return;
         }
  
@@ -50,7 +50,7 @@ public class Plugin : BaseUnityPlugin
         {
             Logger.LogInfo("Command 'test' execution");
  
-            return "string to return to rcon client";
+            return "string to return to Rcon client";
         });
     }
  
@@ -58,7 +58,7 @@ public class Plugin : BaseUnityPlugin
     {
         if (RCON == null)
         {
-            Logger.LogError("rcon plugin not loaded");
+            Logger.LogError("Rcon plugin not loaded");
             return;
         }
  
@@ -77,7 +77,7 @@ RCON.UnRegisterCommand(this, "test");
 
 Add create a `TestCommand.cs` class
 ```csharp
-using rcon;
+using Rcon;
 class TestCommand : AbstractCommand
 {
     public override string onCommand(string[] args)
@@ -85,14 +85,14 @@ class TestCommand : AbstractCommand
         // This will be executed on `test`
         // There is a protected property called "Plugin"
         // which holds a reference to your plugin class
-        return "string to return to rcon client";
+        return "string to return to Rcon client";
     }
 }
 ```
 
 ### Unknown Command Handler
 
-If an issued command can not be found, the library fires an the  `rcon.OnUnknownCommand` event.
+If an issued command can not be found, the library fires an the  `Rcon.OnUnknownCommand` event.
 
 This is an example to forward unknown commands to a connected client based on their `steamid`
 

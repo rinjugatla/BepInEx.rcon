@@ -1,6 +1,6 @@
 ﻿using System.Net.Sockets;
 
-namespace rcon.Internal
+namespace Rcon.Internal
 {
     internal class StateObject
     {

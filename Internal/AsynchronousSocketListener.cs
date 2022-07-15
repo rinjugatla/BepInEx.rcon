@@ -4,15 +4,15 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace rcon.Internal
+namespace Rcon.Internal
 {
     internal class AsynchronousSocketListener
     {
         internal delegate void MessageReceived(Socket socket, int requestId, PacketType type, string payload);
         internal event MessageReceived OnMessage;
-        private Socket listener;
+        private Socket Listener;
 
-        private List<StateObject> clients = new List<StateObject>();
+        private List<StateObject> Clients = new List<StateObject>();
 
         internal void StartListening(int port)
         {
@@ -20,14 +20,14 @@ namespace rcon.Internal
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
 
             // Create a TCP/IP socket.  
-            listener = new Socket(ipAddress.AddressFamily,
+            Listener = new Socket(ipAddress.AddressFamily,
                 SocketType.Stream, ProtocolType.Tcp);
 
             // Bind the socket to the local endpoint and listen for incoming connections.  
             try
             {
-                listener.Bind(localEndPoint);
-                listener.Listen(100);
+                Listener.Bind(localEndPoint);
+                Listener.Listen(100);
             }
             catch (Exception e)
             {
@@ -58,20 +58,20 @@ namespace rcon.Internal
         internal void Update()
         {
 
-            for (int i = 0; i < clients.Count; i++)
+            for (int i = 0; i < Clients.Count; i++)
             {
-                StateObject state = clients[i];
+                StateObject state = Clients[i];
                 if (!isConnected(state.workSocket))
                 {
                     UnityEngine.Debug.Log("Rcon client disconnected");
                     state.workSocket.Close();
-                    clients.Remove(state);
+                    Clients.Remove(state);
                 }
             }
 
-            listener.BeginAccept(
+            Listener.BeginAccept(
                         new AsyncCallback(AcceptCallback),
-                        listener);
+                        Listener);
         }
 
         internal void AcceptCallback(IAsyncResult ar)
@@ -80,13 +80,13 @@ namespace rcon.Internal
             //allDone.Set();
 
             // Get the socket that handles the client request.  
-            Socket listener = (Socket)ar.AsyncState;
-            Socket handler = listener.EndAccept(ar);
+            Socket Listener = (Socket)ar.AsyncState;
+            Socket handler = Listener.EndAccept(ar);
 
             // Create the state object.  
             StateObject state = new StateObject();
             state.workSocket = handler;
-            clients.Add(state);
+            Clients.Add(state);
             UnityEngine.Debug.Log("Rcon client connected");
             handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
                 new AsyncCallback(ReadCallback), state);
@@ -154,16 +154,16 @@ namespace rcon.Internal
 
         internal void Close()
         {
-            if (listener.Connected)
+            if (Listener.Connected)
             {
-                foreach (var client in clients)
+                foreach (var client in Clients)
                 {
                     if (isConnected(client.workSocket))
                     {
                         client.workSocket.Close();
                     }
                 }
-                listener.Close();
+                Listener.Close();
             }
 
         }

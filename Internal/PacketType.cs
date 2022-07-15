@@ -1,4 +1,4 @@
-﻿namespace rcon.Internal
+﻿namespace Rcon.Internal
 {
     internal enum PacketType : int
     {

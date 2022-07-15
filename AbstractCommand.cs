@@ -1,16 +1,16 @@
 ﻿using BepInEx;
 
-namespace rcon
+namespace Rcon
 {
     public abstract class AbstractCommand : ICommand
     {
         protected BaseUnityPlugin Plugin { get; private set; }
 
-        void ICommand.setOwner(BaseUnityPlugin owner)
+        void ICommand.SetOwner(BaseUnityPlugin owner)
         {
             Plugin = owner;
         }
 
-        public abstract string onCommand(string[] args);
+        public abstract string OnCommand(string[] args);
     }
 }

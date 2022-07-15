@@ -1,33 +1,33 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using rcon.Internal;
+using Rcon.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
 
-namespace rcon
+namespace Rcon
 {
     [BepInPlugin("nl.avii.plugins.rcon", "rcon", "1.0")]
-    public class rcon : BaseUnityPlugin
+    public class Rcon : BaseUnityPlugin
     {
         public delegate string UnknownCommand(string command, string[] args);
         public event UnknownCommand OnUnknownCommand;
 
         public delegate string ParamsAction(params object[] args);
-        private AsynchronousSocketListener socketListener;
+        private AsynchronousSocketListener SocketListener;
 
         private ConfigEntry<bool> Enabled;
         private ConfigEntry<int> Port;
         private ConfigEntry<string> Password;
 
-        private Dictionary<string, Type> commands = new Dictionary<string, Type>();
-        private Dictionary<string, ParamsAction> customCommands = new Dictionary<string, ParamsAction>();
+        private Dictionary<string, Type> Commands = new Dictionary<string, Type>();
+        private Dictionary<string, ParamsAction> CustomCommands = new Dictionary<string, ParamsAction>();
 
-        private Dictionary<string, BaseUnityPlugin> owners = new Dictionary<string, BaseUnityPlugin>();
+        private Dictionary<string, BaseUnityPlugin> Owners = new Dictionary<string, BaseUnityPlugin>();
 
-        private rcon()
+        private Rcon()
         {
             Enabled = Config.Bind("rcon", "enabled", false, "Enable RCON Communication");
             Port = Config.Bind("rcon", "port", 2458, "Port to use for RCON Communication");
@@ -37,11 +37,11 @@ namespace rcon
         private void OnEnable()
         {
             if (!Enabled.Value) return;
-            socketListener = new AsynchronousSocketListener();
-            socketListener.OnMessage += SocketListener_OnMessage;
+            SocketListener = new AsynchronousSocketListener();
+            SocketListener.OnMessage += SocketListener_OnMessage;
 
             Logger.LogInfo("RCON Listening on port: " + Port.Value);
-            socketListener.StartListening(Port.Value);
+            SocketListener.StartListening(Port.Value);
         }
 
         private void SocketListener_OnMessage(Socket socket, int requestId, PacketType type, string payload)
@@ -76,7 +76,7 @@ namespace rcon
                     string command = data[0].ToLower();
                     data.RemoveAt(0);
 
-                    if (!commands.ContainsKey(command) && !customCommands.ContainsKey(command))
+                    if (!Commands.ContainsKey(command) && !CustomCommands.ContainsKey(command))
                     {
                         var ret = OnUnknownCommand?.Invoke(command, data.ToArray());
                         PacketType t = PacketType.Command;
@@ -87,17 +87,17 @@ namespace rcon
                         return;
                     }
 
-                    if (commands.ContainsKey(command))
+                    if (Commands.ContainsKey(command))
                     {
-                        var t = commands[command];
+                        var t = Commands[command];
                         var instance = (ICommand)Activator.CreateInstance(t);
-                        instance.setOwner(owners[command]);
-                        var response = instance.onCommand(data.ToArray());
+                        instance.SetOwner(Owners[command]);
+                        var response = instance.OnCommand(data.ToArray());
                         socket.Send(PacketBuilder.CreatePacket(requestId, type, response));
                     }
-                    else if (customCommands.ContainsKey(command))
+                    else if (CustomCommands.ContainsKey(command))
                     {
-                        var response = customCommands[command](data.ToArray());
+                        var response = CustomCommands[command](data.ToArray());
                         socket.Send(PacketBuilder.CreatePacket(requestId, type, response));
                     }
                     break;
@@ -110,62 +110,62 @@ namespace rcon
         private void Update()
         {
             if (!Enabled.Value) return;
-            if (socketListener == null) return;
+            if (SocketListener == null) return;
 
-            socketListener.Update();
+            SocketListener.Update();
         }
 
         private void OnDisable()
         {
             if (!Enabled.Value) return;
-            socketListener.Close();
+            SocketListener.Close();
         }
 
         public void RegisterCommand<T>(BaseUnityPlugin owner, string command) where T : AbstractCommand, new()
         {
             command = command.ToLower();
-            if (owners.ContainsKey(command))
+            if (Owners.ContainsKey(command))
             {
                 Logger.LogError($"{command} already registered");
                 return;
             }
-            owners[command] = owner;
-            commands[command] = typeof(T);
+            Owners[command] = owner;
+            Commands[command] = typeof(T);
             Logger.LogInfo($"Registering Command: {command}");
         }
 
         public void RegisterCommand(BaseUnityPlugin owner, string command, ParamsAction action)
         {
             command = command.ToLower();
-            if (owners.ContainsKey(command))
+            if (Owners.ContainsKey(command))
             {
                 Logger.LogError($"{command} already registered");
                 return;
             }
-            owners[command] = owner;
-            customCommands[command] = action;
+            Owners[command] = owner;
+            CustomCommands[command] = action;
             Logger.LogInfo($"Registering Command: {command}");
         }
 
         public void UnRegisterCommand(BaseUnityPlugin owner, string command)
         {
-            if (!owners.ContainsKey(command))
+            if (!Owners.ContainsKey(command))
             {
                 return;
             }
 
-            if (owners[command] != owner)
+            if (Owners[command] != owner)
             {
                 return;
             }
 
-            owners.Remove(command);
+            Owners.Remove(command);
 
-            if (commands.ContainsKey(command))
-                commands.Remove(command);
+            if (Commands.ContainsKey(command))
+                Commands.Remove(command);
 
-            if (customCommands.ContainsKey(command))
-                customCommands.Remove(command);
+            if (CustomCommands.ContainsKey(command))
+                CustomCommands.Remove(command);
         }
     }
 }

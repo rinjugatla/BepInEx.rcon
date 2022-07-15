@@ -1,10 +1,10 @@
 ﻿using BepInEx;
 
-namespace rcon
+namespace Rcon
 {
     internal interface ICommand
     {
-        void setOwner(BaseUnityPlugin owner);
-        string onCommand(string[] args);
+        void SetOwner(BaseUnityPlugin owner);
+        string OnCommand(string[] args);
     }
 }
