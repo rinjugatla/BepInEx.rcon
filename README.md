@@ -7,6 +7,7 @@ This is an RCON library for BepInEx compatible games that do not ship with a nat
 Add `Rcon.dll` to your `BepInEx/plugins` folder. Run the server at least once to generate the required config files.
 
 ### Configuration
+
 The configuration file will be generated as `BepInEx/config/nl.avii.plugins.Rcon.cfg`
 
 Open this file with your favorite editor and change `enabled` to `true`.
@@ -29,6 +30,7 @@ Add a reference to `Rcon.dll` to your own project
 There are 2 ways to register commands from your own plugins.
 
 Inline command example
+
 ```csharp
 [BepInPlugin("com.bepinex.plugins.example", "Example", "1.0")]
 [BepInDependency("nl.avii.plugins.Rcon", BepInDependency.DependencyFlags.HardDependency)]
@@ -66,16 +68,21 @@ public class Plugin : BaseUnityPlugin
     }
 }
 ```
+
 Or using a separate class handler, register the command in `OnEnable()` of your plugin:
+
 ```csharp
 RCON.RegisterCommand<TestCommand>(this, "test");
 ```
+
 And Unregister in `OnDisable()`
+
 ```csharp
 RCON.UnRegisterCommand(this, "test");
 ```
 
 Add create a `TestCommand.cs` class
+
 ```csharp
 using Rcon;
 class TestCommand : AbstractCommand
