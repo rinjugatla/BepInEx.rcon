@@ -8,7 +8,7 @@ Add `Rcon.dll` to your `BepInEx/plugins` folder. Run the server at least once to
 
 ### Configuration
 
-The configuration file will be generated as `BepInEx/config/nl.avii.plugins.Rcon.cfg`
+The configuration file will be generated as `BepInEx/config/nl.avii.plugins.rcon.cfg`
 
 Open this file with your favorite editor and change `enabled` to `true`.
  Change the port number to something close to the game port, for Valheim I've used `GamePort+2`, and at least on Nitrado game servers, I am able to connect to it. (not sure about other providers)
@@ -33,7 +33,7 @@ Inline command example
 
 ```csharp
 [BepInPlugin("com.bepinex.plugins.example", "Example", "1.0")]
-[BepInDependency("nl.avii.plugins.Rcon", BepInDependency.DependencyFlags.HardDependency)]
+[BepInDependency("nl.avii.plugins.rcon", BepInDependency.DependencyFlags.HardDependency)]
 [BepInProcess("valheim_server.exe")]
 public class Plugin : BaseUnityPlugin
 {
